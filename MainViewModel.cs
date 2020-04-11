@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reflection;
 using System.Windows.Media;
 using Prism.Commands;
 using Prism.Mvvm;
@@ -25,17 +26,38 @@ namespace TicTacToe
         private bool _botWin;
         private bool _humanWin;
         private FirstMoveEnum _firstMove;
+        private PropertyInfo _selectedPlayerColor;
+        private PropertyInfo _selectedBotColor;
+        private Color _playerColor;
+        private Color _botColor;
 
         public ObservableCollection<CellViewModel> GameField { get; set; }
         public ObservableCollection<State> AvailableSigns { get; set; }
         public ObservableCollection<FirstMoveEnum> AvailableStarters { get; set; }
+        public PropertyInfo[] AvailableColors { get; set; }
 
-        private bool _controlsEnabled = true;
 
-        public bool ControlsEnabled
+        public PropertyInfo SelectedBotColor
         {
-            get => _controlsEnabled;
-            set => SetProperty(ref _controlsEnabled, value);
+            get => _selectedBotColor;
+            set
+            {
+                if (SetProperty(ref _selectedBotColor, value))
+                {
+                    _botColor = (Color)ColorConverter.ConvertFromString(_selectedBotColor.Name);
+                }
+            }
+        }
+        public PropertyInfo SelectedPlayerColor
+        {
+            get => _selectedPlayerColor;
+            set
+            {
+                if (SetProperty(ref _selectedPlayerColor, value))
+                {
+                    _playerColor = (Color)ColorConverter.ConvertFromString(_selectedPlayerColor.Name);
+                }
+            }
         }
 
         public string VictoryText
@@ -76,6 +98,9 @@ namespace TicTacToe
             GameField = new ObservableCollection<CellViewModel>();
             AvailableSigns = new ObservableCollection<State>();
             AvailableStarters = new ObservableCollection<FirstMoveEnum>();
+            AvailableColors = typeof(Colors).GetProperties();
+            SelectedPlayerColor = AvailableColors.FirstOrDefault(c => c.Name == "Green");
+            SelectedBotColor = AvailableColors.FirstOrDefault(c => c.Name == "Red");
             StartButtonCommand = new DelegateCommand(StartNewGame, CanStartNewGame);
 
             AvailableSigns.Add(State.X);
@@ -91,7 +116,6 @@ namespace TicTacToe
 
         private void StartNewGame()
         {
-            ControlsEnabled = false;
             _botWin = false;
             _humanWin = false;
             _cellsFilled = 0;
@@ -174,14 +198,14 @@ namespace TicTacToe
             if (cells.All(c => c.CellState == HumanSign))
             {
                 _humanWin = true;
-                HighlightCells(cells, Colors.Green);
+                GameOverHighlightCells(cells, Colors.Green);
                 return true;
             }
 
             if (cells.All(c => c.CellState == BotSign))
             {
                 _botWin = true;
-                HighlightCells(cells, Colors.Red);
+                GameOverHighlightCells(cells, Colors.Red);
                 return true;
             }
 
@@ -192,8 +216,6 @@ namespace TicTacToe
         {
             DisableGameField();
             VictoryText = "Nobody win";
-
-            ControlsEnabled = true;
         }
 
         private void GameOver()
@@ -201,32 +223,15 @@ namespace TicTacToe
             DisableGameField();
 
             if (_humanWin)
-                HumanVictory();
+                VictoryText = "Player win";
 
             if (_botWin)
-                BotVictory();
-
-            ControlsEnabled = true;
-        }
-
-        private void HumanVictory()
-        {
-            VictoryText = "Human win";
-        }
-
-        private void BotVictory()
-        {
-            VictoryText = "Bot win";
-
+                VictoryText = "Bot win";
         }
 
         private void BotMove()
         {
-            if (_cellsFilled == CellsNumber)
-            {
-                ControlsEnabled = true;
-                return;
-            }
+            if (_cellsFilled == CellsNumber) return;
 
             var rnd = new Random();
 
@@ -236,6 +241,7 @@ namespace TicTacToe
                 if (cell != null)
                 {
                     cell.CellState = BotSign;
+                    cell.Highlight(_botColor);
                     _cellsFilled++;
                     return;
                 }
@@ -244,7 +250,7 @@ namespace TicTacToe
             var emptyCells = GameField.Where(c => c.CellState == State.Empty).ToArray();
             var rndCell = rnd.Next(emptyCells.Count());
             emptyCells[rndCell].CellState = BotSign;
-
+            emptyCells[rndCell].Highlight(_botColor);
             _cellsFilled++;
         }
 
@@ -257,7 +263,7 @@ namespace TicTacToe
             {
                 for (var c = 0; c < FieldSize; c++)
                 {
-                    var cell = new CellViewModel(r, c, HumanSign);
+                    var cell = new CellViewModel(r, c, HumanSign, _playerColor);
                     cell.OnClick += HumanMove;
                     GameField.Add(cell);
                 }
@@ -269,10 +275,10 @@ namespace TicTacToe
             foreach (var cell in GameField) cell.Enabled = false;
         }
 
-        private void HighlightCells(CellViewModel[] cells, Color color)
+        private static void GameOverHighlightCells(CellViewModel[] cells, Color color)
         {
             foreach (var cell in cells)
-                cell.Highlight(color);
+                cell.GameOverHighlight(color);
         }
     }
 }

@@ -7,6 +7,6 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800" d:DataContext="{d:DesignInstance ticTacToe:CellViewModel}">
     <Grid>
-        <Button Command="{Binding ClickCommand}" Margin="4" MinHeight="50" MinWidth="50" IsEnabled="{Binding Enabled}" Content="{Binding Text}" FontWeight="Bold" FontSize="40" Foreground="{Binding ForegroundBrush}"></Button>
+        <Button Command="{Binding ClickCommand}" Margin="4" MinHeight="50" MinWidth="50" Content="{Binding Text}" FontWeight="Bold" FontSize="40" BorderThickness="{Binding BorderThickness}" BorderBrush="{Binding BorderBrush}" Foreground="{Binding ForegroundBrush}"></Button>
     </Grid>
 </UserControl>

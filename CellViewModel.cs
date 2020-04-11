@@ -19,6 +19,9 @@ namespace TicTacToe
 
         private State _state = State.Empty;
         private Brush _foregroundBrush = new SolidColorBrush(SystemColors.ControlTextColor);
+        private Brush _borderBrush = new SolidColorBrush(SystemColors.ActiveBorderColor);
+        private int _borderThickness = 1;
+        private readonly Color _humanColor;
         private readonly State _humanSymbol;
         private bool _enabled = true;
         private string _text;
@@ -64,18 +67,30 @@ namespace TicTacToe
             set => SetProperty(ref _foregroundBrush, value);
         }
 
+        public Brush BorderBrush
+        {
+            get => _borderBrush;
+            set => SetProperty(ref _borderBrush, value);
+        }
+        public int BorderThickness
+        {
+            get => _borderThickness;
+            set => SetProperty(ref _borderThickness, value);
+        }
+
         public delegate void ClickEvent(object sender);
         public event ClickEvent OnClick;
 
         #endregion
 
 
-        public CellViewModel(int row, int col, State humanSymbol)
+        public CellViewModel(int row, int col, State humanSymbol, Color humanColor)
         {
             ClickCommand = new DelegateCommand(ButtonClicked, CanClick);
             Row = row;
             Column = col;
             _humanSymbol = humanSymbol;
+            _humanColor = humanColor;
         }
 
         private void ChangeButtonText()
@@ -101,16 +116,20 @@ namespace TicTacToe
             ForegroundBrush = new SolidColorBrush(color);
         }
 
+        public void GameOverHighlight(Color color)
+        {
+            BorderThickness = 3;
+            BorderBrush = new SolidColorBrush(color);
+        }
+
         private void ButtonClicked()
         {
-            if (CellState != State.Empty) return;
+            if (!Enabled || CellState != State.Empty) return;
 
             CellState = _humanSymbol;
+            Highlight(_humanColor);
             OnClick?.Invoke(this);
         }
-        private bool CanClick()
-        {
-            return CellState == State.Empty;
-        }
+        private static bool CanClick() => true;
     }
 }
