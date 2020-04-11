@@ -8,6 +8,12 @@ using Prism.Mvvm;
 
 namespace TicTacToe
 {
+    public enum FirstMoveEnum
+    {
+        Human,
+        Bot
+    }
+
     public class MainViewModel : BindableBase
     {
         #region Properties
@@ -18,9 +24,11 @@ namespace TicTacToe
         private string _victoryText;
         private bool _botWin;
         private bool _humanWin;
+        private FirstMoveEnum _firstMove;
 
         public ObservableCollection<CellViewModel> GameField { get; set; }
         public ObservableCollection<State> AvailableSigns { get; set; }
+        public ObservableCollection<FirstMoveEnum> AvailableStarters { get; set; }
 
         private bool _controlsEnabled = true;
 
@@ -51,7 +59,13 @@ namespace TicTacToe
         }
 
         private State BotSign => _humanSign == State.O ? State.X : State.O;
-        private int CellsNumber => (int) Math.Pow(_fieldSize, 2);
+        private int CellsNumber => (int)Math.Pow(_fieldSize, 2);
+
+        public FirstMoveEnum FirstMove
+        {
+            get => _firstMove;
+            set => SetProperty(ref _firstMove, value);
+        }
 
         #endregion
 
@@ -61,11 +75,16 @@ namespace TicTacToe
         {
             GameField = new ObservableCollection<CellViewModel>();
             AvailableSigns = new ObservableCollection<State>();
+            AvailableStarters = new ObservableCollection<FirstMoveEnum>();
             StartButtonCommand = new DelegateCommand(StartNewGame, CanStartNewGame);
 
             AvailableSigns.Add(State.X);
             AvailableSigns.Add(State.O);
             HumanSign = AvailableSigns[0];
+
+            AvailableStarters.Add(FirstMoveEnum.Bot);
+            AvailableStarters.Add(FirstMoveEnum.Human);
+            FirstMove = AvailableStarters[0];
         }
 
         #endregion
@@ -78,6 +97,8 @@ namespace TicTacToe
             _cellsFilled = 0;
             VictoryText = "";
             CreateGameField();
+
+            if (FirstMove == FirstMoveEnum.Bot) BotMove();
         }
 
         private static bool CanStartNewGame() => true;
@@ -216,6 +237,7 @@ namespace TicTacToe
                 {
                     cell.CellState = BotSign;
                     _cellsFilled++;
+                    return;
                 }
             }
 
