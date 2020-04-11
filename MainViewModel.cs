@@ -27,6 +27,8 @@ namespace TicTacToe
         private string _victoryText;
         private bool _botWin;
         private bool _humanWin;
+        private bool _gameInProgress;
+        private bool _controlsEnabled =true;
         private FirstMoveEnum _firstMove;
         private PropertyInfo _selectedPlayerColor;
         private PropertyInfo _selectedBotColor;
@@ -81,6 +83,8 @@ namespace TicTacToe
         }
 
         public DelegateCommand StartButtonCommand { get; }
+        public DelegateCommand StopButtonCommand { get; }
+
 
         public State HumanSign
         {
@@ -97,6 +101,22 @@ namespace TicTacToe
             set => SetProperty(ref _firstMove, value);
         }
 
+        public bool GameInProgress
+        {
+            get => _gameInProgress;
+            set
+            {
+                if (SetProperty(ref _gameInProgress, value))
+                    ControlsEnabled = !value;
+            }
+        }
+
+        public bool ControlsEnabled
+        {
+            get => _controlsEnabled;
+            set => SetProperty(ref _controlsEnabled, value);
+        }
+
         #endregion
 
         #region Constructors
@@ -109,7 +129,9 @@ namespace TicTacToe
             AvailableColors = typeof(Colors).GetProperties();
             SelectedPlayerColor = AvailableColors.FirstOrDefault(c => c.Name == "Green");
             SelectedBotColor = AvailableColors.FirstOrDefault(c => c.Name == "Red");
+            
             StartButtonCommand = new DelegateCommand(StartNewGame, CanStartNewGame);
+            StopButtonCommand = new DelegateCommand(StopGame, CanStopGame);
 
             AvailableSigns.Add(State.X);
             AvailableSigns.Add(State.O);
@@ -126,6 +148,7 @@ namespace TicTacToe
 
         private void StartNewGame()
         {
+            GameInProgress = true;
             _botWin = false;
             _humanWin = false;
             _cellsFilled = 0;
@@ -133,20 +156,36 @@ namespace TicTacToe
             CreateGameField();
 
             Bots.Clear();
-            Bots.Add(new RandomBot(BotSign, _botColor));
+            Bots.Add(new RandomBot(BotSign, _botColor, FieldSize));
 
             if (NumberOfBots > 1)
             {
                 var r = new Random();
                 for (var i = 0; i < NumberOfBots - 1; i++)
-                    Bots.Add(new RandomBot(BotSign, Color.FromRgb((byte)r.Next(1, 255), (byte)r.Next(1, 255), (byte)r.Next(1, 233))));
+                    Bots.Add(new RandomBot(BotSign, Color.FromRgb((byte)r.Next(1, 255), (byte)r.Next(1, 255), (byte)r.Next(1, 233)), FieldSize));
             }
 
 
             if (FirstMove == FirstMoveEnum.Bot) BotMove();
         }
 
+        private void StopGame()
+        {
+            if (!GameInProgress) return;
+
+            _botWin = false;
+            _humanWin = false;
+            _cellsFilled = 0;
+            VictoryText = "";
+            Bots.Clear();
+            GameField.Clear();
+
+            GameInProgress = false;
+        }
+
         private static bool CanStartNewGame() => true;
+        private static bool CanStopGame() => true;
+
 
         private void HumanMove(object sender)
         {
@@ -242,11 +281,13 @@ namespace TicTacToe
         {
             DisableGameField();
             VictoryText = "Nobody win";
+            GameInProgress = false;
         }
 
         private void GameOver()
         {
             DisableGameField();
+            GameInProgress = false;
 
             if (_humanWin)
                 VictoryText = "Player win";
@@ -259,7 +300,10 @@ namespace TicTacToe
         {
             foreach (var bot in Bots)
             {
-                bot.BotMove(GameField, FieldSize, ref _cellsFilled);
+                if (_cellsFilled == CellsNumber) return;
+                bot.BotMove(GameField);
+                _cellsFilled++;
+
                 CheckVictory();
             }
         }

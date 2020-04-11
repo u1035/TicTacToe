@@ -46,20 +46,21 @@
                     <RowDefinition Height="Auto"></RowDefinition>
                     <RowDefinition Height="Auto"></RowDefinition>
                     <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
                     <RowDefinition Height="*"></RowDefinition>
                 </Grid.RowDefinitions>
 
                 <TextBlock Margin="6" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Right">Player's sign:</TextBlock>
-                <ComboBox Margin="4" Grid.Column="1" Grid.Row="0" HorizontalContentAlignment="Right" IsEditable="False" ItemsSource="{Binding AvailableSigns}" SelectedItem="{Binding HumanSign}"></ComboBox>
+                <ComboBox Margin="4" Grid.Column="1" Grid.Row="0" HorizontalContentAlignment="Right" IsEnabled="{Binding ControlsEnabled}" IsEditable="False" ItemsSource="{Binding AvailableSigns}" SelectedItem="{Binding HumanSign}"></ComboBox>
 
                 <TextBlock Margin="5" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Right">Field side:</TextBlock>
-                <TextBox Margin="4" Grid.Column="1" Grid.Row="1" TextAlignment="Center" Text="{Binding FieldSize}"></TextBox>
+                <TextBox Margin="4" Grid.Column="1" Grid.Row="1" TextAlignment="Center" IsEnabled="{Binding ControlsEnabled}" Text="{Binding FieldSize}"></TextBox>
 
                 <TextBlock Margin="5" Grid.Column="0" Grid.Row="2" HorizontalAlignment="Right">First move:</TextBlock>
-                <ComboBox Margin="4" Grid.Column="1" Grid.Row="2" HorizontalContentAlignment="Right" IsEditable="False" ItemsSource="{Binding AvailableStarters}" SelectedItem="{Binding FirstMove}"></ComboBox>
+                <ComboBox Margin="4" Grid.Column="1" Grid.Row="2" HorizontalContentAlignment="Right" IsEditable="False" IsEnabled="{Binding ControlsEnabled}" ItemsSource="{Binding AvailableStarters}" SelectedItem="{Binding FirstMove}"></ComboBox>
 
                 <TextBlock Margin="5" Grid.Column="0" Grid.Row="3" HorizontalAlignment="Right">Player's color:</TextBlock>
-                <ComboBox Margin="4" Grid.Column="1" Grid.Row="3" IsEditable="False" ItemsSource="{Binding AvailableColors}" SelectedItem="{Binding SelectedPlayerColor}">
+                <ComboBox Margin="4" Grid.Column="1" Grid.Row="3" IsEditable="False" IsEnabled="{Binding ControlsEnabled}" ItemsSource="{Binding AvailableColors}" SelectedItem="{Binding SelectedPlayerColor}">
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
@@ -71,7 +72,7 @@
                 </ComboBox>
 
                 <TextBlock Margin="5" Grid.Column="0" Grid.Row="4" HorizontalAlignment="Right">Bot color:</TextBlock>
-                <ComboBox Margin="4" Grid.Column="1" Grid.Row="4" IsEditable="False" ItemsSource="{Binding AvailableColors}" SelectedItem="{Binding SelectedBotColor}">
+                <ComboBox Margin="4" Grid.Column="1" Grid.Row="4" IsEditable="False" IsEnabled="{Binding ControlsEnabled}" ItemsSource="{Binding AvailableColors}" SelectedItem="{Binding SelectedBotColor}">
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
@@ -83,11 +84,12 @@
                 </ComboBox>
 
                 <TextBlock Margin="5" Grid.Column="0" Grid.Row="5" HorizontalAlignment="Right">Number of bots:</TextBlock>
-                <TextBox Margin="4" Grid.Column="1" Grid.Row="5" TextAlignment="Center" Text="{Binding NumberOfBots}"></TextBox>
+                <TextBox Margin="4" Grid.Column="1" Grid.Row="5" TextAlignment="Center" IsEnabled="{Binding ControlsEnabled}" Text="{Binding NumberOfBots}"></TextBox>
 
                 <Button Margin="4" Grid.Column="0" Grid.Row="6" Grid.ColumnSpan="2" Command="{Binding StartButtonCommand}">Start new game</Button>
+                <Button Margin="4" Grid.Column="0" Grid.Row="7" Grid.ColumnSpan="2" Command="{Binding StopButtonCommand}">Stop</Button>
 
-                <TextBlock Margin="4" Grid.Column="0" Grid.Row="7" Grid.ColumnSpan="2" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="30" Text="{Binding VictoryText}"></TextBlock>
+                <TextBlock Margin="4" Grid.Column="0" Grid.Row="8" Grid.ColumnSpan="2" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="30" Text="{Binding VictoryText}"></TextBlock>
             </Grid>
         </GroupBox>
     </Grid>
