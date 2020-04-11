@@ -3,21 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Media;
 
-namespace TicTacToe
+namespace TicTacToe.Bots
 {
-    public class GameBot
+    public class RandomBot : GameBot
     {
-        private readonly State _botSign;
-        private readonly Color _botColor;
-
-
-        public GameBot(State botSign, Color botColor)
+        public RandomBot(State botSign, Color botColor) : base(botSign, botColor)
         {
-            _botColor = botColor;
-            _botSign = botSign;
         }
 
-        public void BotMove(IEnumerable<CellViewModel> gameField, int fieldSize, ref int cellsFilled)
+        public override void BotMove(IEnumerable<CellViewModel> gameField, int fieldSize, ref int cellsFilled)
         {
             var cellsNumber = fieldSize * fieldSize;
 
@@ -27,8 +21,8 @@ namespace TicTacToe
 
             var emptyCells = gameField.Where(c => c.CellState == State.Empty).ToArray();
             var rndCell = rnd.Next(emptyCells.Count());
-            emptyCells[rndCell].CellState = _botSign;
-            emptyCells[rndCell].Highlight(_botColor);
+            emptyCells[rndCell].CellState = BotSign;
+            emptyCells[rndCell].Highlight(BotColor);
             cellsFilled++;
         }
     }

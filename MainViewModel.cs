@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Windows.Media;
 using Prism.Commands;
 using Prism.Mvvm;
+using TicTacToe.Bots;
 
 namespace TicTacToe
 {
@@ -132,13 +133,13 @@ namespace TicTacToe
             CreateGameField();
 
             Bots.Clear();
-            Bots.Add(new GameBot(BotSign, _botColor));
+            Bots.Add(new RandomBot(BotSign, _botColor));
 
             if (NumberOfBots > 1)
             {
                 var r = new Random();
                 for (var i = 0; i < NumberOfBots - 1; i++)
-                    Bots.Add(new GameBot(BotSign, Color.FromRgb((byte)r.Next(1, 255), (byte)r.Next(1, 255), (byte)r.Next(1, 233))));
+                    Bots.Add(new RandomBot(BotSign, Color.FromRgb((byte)r.Next(1, 255), (byte)r.Next(1, 255), (byte)r.Next(1, 233))));
             }
 
 
