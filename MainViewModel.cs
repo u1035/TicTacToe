@@ -22,6 +22,7 @@ namespace TicTacToe
         private int _fieldSize = 3;
         private State _humanSign;
         private int _cellsFilled;
+        private int _numberOfBots = 1;
         private string _victoryText;
         private bool _botWin;
         private bool _humanWin;
@@ -34,6 +35,8 @@ namespace TicTacToe
         public ObservableCollection<CellViewModel> GameField { get; set; }
         public ObservableCollection<State> AvailableSigns { get; set; }
         public ObservableCollection<FirstMoveEnum> AvailableStarters { get; set; }
+
+        public List<GameBot> Bots;
         public PropertyInfo[] AvailableColors { get; set; }
 
 
@@ -65,7 +68,11 @@ namespace TicTacToe
             get => _victoryText;
             set => SetProperty(ref _victoryText, value);
         }
-
+        public int NumberOfBots
+        {
+            get => _numberOfBots;
+            set => SetProperty(ref _numberOfBots, value);
+        }
         public int FieldSize
         {
             get => _fieldSize;
@@ -110,6 +117,8 @@ namespace TicTacToe
             AvailableStarters.Add(FirstMoveEnum.Bot);
             AvailableStarters.Add(FirstMoveEnum.Human);
             FirstMove = AvailableStarters[0];
+
+            Bots = new List<GameBot>();
         }
 
         #endregion
@@ -122,6 +131,17 @@ namespace TicTacToe
             VictoryText = "";
             CreateGameField();
 
+            Bots.Clear();
+            Bots.Add(new GameBot(BotSign, _botColor));
+
+            if (NumberOfBots > 1)
+            {
+                var r = new Random();
+                for (var i = 0; i < NumberOfBots - 1; i++)
+                    Bots.Add(new GameBot(BotSign, Color.FromRgb((byte)r.Next(1, 255), (byte)r.Next(1, 255), (byte)r.Next(1, 233))));
+            }
+
+
             if (FirstMove == FirstMoveEnum.Bot) BotMove();
         }
 
@@ -132,8 +152,9 @@ namespace TicTacToe
             _cellsFilled++;
             CheckVictory();
 
+            if (_humanWin) return;
+
             BotMove();
-            CheckVictory();
         }
 
         private void CheckVictory()
@@ -204,9 +225,13 @@ namespace TicTacToe
 
             if (cells.All(c => c.CellState == BotSign))
             {
-                _botWin = true;
-                GameOverHighlightCells(cells, Colors.Red);
-                return true;
+                var botBrush = cells.First().ForegroundBrush.ToString();
+                if (cells.All(c => c.ForegroundBrush.ToString() == botBrush))
+                {
+                    _botWin = true;
+                    GameOverHighlightCells(cells, Colors.Red);
+                    return true;
+                }
             }
 
             return false;
@@ -231,27 +256,11 @@ namespace TicTacToe
 
         private void BotMove()
         {
-            if (_cellsFilled == CellsNumber) return;
-
-            var rnd = new Random();
-
-            if (_cellsFilled == CellsNumber - 1)
+            foreach (var bot in Bots)
             {
-                var cell = GameField.FirstOrDefault(c => c.CellState == State.Empty);
-                if (cell != null)
-                {
-                    cell.CellState = BotSign;
-                    cell.Highlight(_botColor);
-                    _cellsFilled++;
-                    return;
-                }
+                bot.BotMove(GameField, FieldSize, ref _cellsFilled);
+                CheckVictory();
             }
-
-            var emptyCells = GameField.Where(c => c.CellState == State.Empty).ToArray();
-            var rndCell = rnd.Next(emptyCells.Count());
-            emptyCells[rndCell].CellState = BotSign;
-            emptyCells[rndCell].Highlight(_botColor);
-            _cellsFilled++;
         }
 
 

@@ -45,6 +45,7 @@
                     <RowDefinition Height="Auto"></RowDefinition>
                     <RowDefinition Height="Auto"></RowDefinition>
                     <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
                     <RowDefinition Height="*"></RowDefinition>
                 </Grid.RowDefinitions>
 
@@ -81,9 +82,12 @@
                     </ComboBox.ItemTemplate>
                 </ComboBox>
 
-                <Button Margin="4" Grid.Column="0" Grid.Row="5" Grid.ColumnSpan="2" Command="{Binding StartButtonCommand}">Start new game</Button>
+                <TextBlock Margin="5" Grid.Column="0" Grid.Row="5" HorizontalAlignment="Right">Number of bots:</TextBlock>
+                <TextBox Margin="4" Grid.Column="1" Grid.Row="5" TextAlignment="Center" Text="{Binding NumberOfBots}"></TextBox>
 
-                <TextBlock Margin="4" Grid.Column="0" Grid.Row="6" Grid.ColumnSpan="2" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="30" Text="{Binding VictoryText}"></TextBlock>
+                <Button Margin="4" Grid.Column="0" Grid.Row="6" Grid.ColumnSpan="2" Command="{Binding StartButtonCommand}">Start new game</Button>
+
+                <TextBlock Margin="4" Grid.Column="0" Grid.Row="7" Grid.ColumnSpan="2" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="30" Text="{Binding VictoryText}"></TextBlock>
             </Grid>
         </GroupBox>
     </Grid>

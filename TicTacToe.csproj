@@ -86,6 +86,7 @@
     <Compile Include="CellView.xaml.cs">
       <DependentUpon>CellView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="GameBot.cs" />
     <Compile Include="MainViewModel.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
