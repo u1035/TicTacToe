@@ -241,17 +241,9 @@ namespace TicTacToe
                 }
             }
 
-            var moveDone = false;
-            while (!moveDone)
-            {
-                var col = rnd.Next(_fieldSize + 1);
-                var row = rnd.Next(_fieldSize + 1);
-                var cell = GameField.FirstOrDefault(c => c.Row == row && c.Column == col && c.CellState == State.Empty);
-                if (cell == null) continue;
-
-                cell.CellState = BotSign;
-                moveDone = true;
-            }
+            var emptyCells = GameField.Where(c => c.CellState == State.Empty).ToArray();
+            var rndCell = rnd.Next(emptyCells.Count());
+            emptyCells[rndCell].CellState = BotSign;
 
             _cellsFilled++;
         }
