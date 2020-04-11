@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows.Media;
 using Prism.Commands;
 using Prism.Mvvm;
 
@@ -22,6 +23,7 @@ namespace TicTacToe
         public ObservableCollection<State> AvailableSigns { get; set; }
 
         private bool _controlsEnabled = true;
+
         public bool ControlsEnabled
         {
             get => _controlsEnabled;
@@ -49,7 +51,7 @@ namespace TicTacToe
         }
 
         private State BotSign => _humanSign == State.O ? State.X : State.O;
-        private int CellsNumber => (int)Math.Pow(_fieldSize, 2);
+        private int CellsNumber => (int) Math.Pow(_fieldSize, 2);
 
         #endregion
 
@@ -101,6 +103,7 @@ namespace TicTacToe
                     return;
                 }
             }
+
             //Check cols
             for (var col = 0; col < FieldSize; col++)
             {
@@ -111,6 +114,7 @@ namespace TicTacToe
                     return;
                 }
             }
+
             //Check diagonals
             var diagonal = new List<CellViewModel>();
             for (var i = 0; i < FieldSize; i++)
@@ -119,6 +123,7 @@ namespace TicTacToe
                 if (cell != null)
                     diagonal.Add(cell);
             }
+
             if (CheckCellsGroup(diagonal.ToArray()))
             {
                 GameOver();
@@ -132,6 +137,7 @@ namespace TicTacToe
                 if (cell != null)
                     diagonal.Add(cell);
             }
+
             if (CheckCellsGroup(diagonal.ToArray()))
             {
                 GameOver();
@@ -147,11 +153,14 @@ namespace TicTacToe
             if (cells.All(c => c.CellState == HumanSign))
             {
                 _humanWin = true;
+                HighlightCells(cells, Colors.Green);
                 return true;
             }
+
             if (cells.All(c => c.CellState == BotSign))
             {
                 _botWin = true;
+                HighlightCells(cells, Colors.Red);
                 return true;
             }
 
@@ -221,6 +230,7 @@ namespace TicTacToe
                 cell.CellState = BotSign;
                 moveDone = true;
             }
+
             _cellsFilled++;
         }
 
@@ -243,6 +253,12 @@ namespace TicTacToe
         private void DisableGameField()
         {
             foreach (var cell in GameField) cell.Enabled = false;
+        }
+
+        private void HighlightCells(CellViewModel[] cells, Color color)
+        {
+            foreach (var cell in cells)
+                cell.Highlight(color);
         }
     }
 }

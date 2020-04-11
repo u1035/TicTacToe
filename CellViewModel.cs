@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Windows;
+using System.Windows.Media;
 using Prism.Commands;
 using Prism.Mvvm;
 
@@ -13,7 +15,10 @@ namespace TicTacToe
 
     public class CellViewModel : BindableBase
     {
+        #region Properties
+
         private State _state = State.Empty;
+        private Brush _foregroundBrush = new SolidColorBrush(SystemColors.ControlTextColor);
         private readonly State _humanSymbol;
         private bool _enabled = true;
         private string _text;
@@ -25,10 +30,7 @@ namespace TicTacToe
             get => _state;
             set
             {
-                if (SetProperty(ref _state, value))
-                {
-                    ChangeButtonText();
-                }
+                if (SetProperty(ref _state, value)) ChangeButtonText();
             }
         }
 
@@ -56,9 +58,17 @@ namespace TicTacToe
             set => SetProperty(ref _enabled, value);
         }
 
+        public Brush ForegroundBrush
+        {
+            get => _foregroundBrush;
+            set => SetProperty(ref _foregroundBrush, value);
+        }
 
         public delegate void ClickEvent(object sender);
         public event ClickEvent OnClick;
+
+        #endregion
+
 
         public CellViewModel(int row, int col, State humanSymbol)
         {
@@ -84,6 +94,11 @@ namespace TicTacToe
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+        }
+
+        public void Highlight(Color color)
+        {
+            ForegroundBrush = new SolidColorBrush(color);
         }
 
         private void ButtonClicked()

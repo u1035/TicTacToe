@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TicTacToe"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" d:DataContext="{d:DesignInstance local:MainViewModel}">
+        Title="TicTacToe" Height="450" Width="800" d:DataContext="{d:DesignInstance local:MainViewModel}">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition></ColumnDefinition>
@@ -35,25 +35,25 @@
         <GroupBox Grid.Row="0" Grid.Column="1" Grid.RowSpan="3" Header="Game config">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition></ColumnDefinition>
-                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition Width="3*"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"></RowDefinition>
                     <RowDefinition Height="Auto"></RowDefinition>
                     <RowDefinition Height="Auto"></RowDefinition>
-                    <RowDefinition Height="Auto"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
                 </Grid.RowDefinitions>
 
-                <TextBlock Margin="4" Grid.Column="0" Grid.Row="0">Player's sign: </TextBlock>
-                <ComboBox Margin="4" Grid.Column="1" Grid.Row="0" IsEditable="False" IsEnabled="{Binding ControlsEnabled}" ItemsSource="{Binding AvailableSigns}" SelectedItem="{Binding HumanSign}"></ComboBox>
+                <TextBlock Margin="6" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Right">Player's sign: </TextBlock>
+                <ComboBox Margin="4" Grid.Column="1" Grid.Row="0" HorizontalContentAlignment="Center" IsEditable="False" IsEnabled="{Binding ControlsEnabled}" ItemsSource="{Binding AvailableSigns}" SelectedItem="{Binding HumanSign}"></ComboBox>
 
-                <TextBlock Margin="4" Grid.Column="0" Grid.Row="1">Field side:</TextBlock>
-                <TextBox Margin="4" Grid.Column="1" Grid.Row="1" IsEnabled="{Binding ControlsEnabled}" Text="{Binding FieldSize}"></TextBox>
+                <TextBlock Margin="5" Grid.Column="0" Grid.Row="1" HorizontalAlignment="Right">Field side:</TextBlock>
+                <TextBox Margin="4" Grid.Column="1" Grid.Row="1" TextAlignment="Center" IsEnabled="{Binding ControlsEnabled}" Text="{Binding FieldSize}"></TextBox>
 
                 <Button Margin="4" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Command="{Binding StartButtonCommand}">Start new game</Button>
 
-                <TextBlock Margin="4" Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" Text="{Binding VictoryText}"></TextBlock>
+                <TextBlock Margin="4" Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="30" Text="{Binding VictoryText}"></TextBlock>
             </Grid>
         </GroupBox>
     </Grid>
