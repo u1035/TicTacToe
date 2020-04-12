@@ -11,7 +11,7 @@ namespace TicTacToe
     public class Win
     {
         public bool GameOver { get; set; }
-        public State WinnerSign { get; set; }
+        public Sign WinnerSign { get; set; }
 
         public IEnumerable<CellViewModel> WinnerLine { get; set; }
     }
@@ -45,7 +45,7 @@ namespace TicTacToe
         public int Rows => FieldSize;
         public int Cols => FieldSize;
         public int CellsNumber => (int)Math.Pow(FieldSize, 2);
-        public int EmptyCells => _gameField.Count(c => c.CellState == State.Empty);
+        public int EmptyCells => _gameField.Count(c => c.CellSign == Sign.Empty);
         public int FilledCells => Rows * Cols - EmptyCells;
 
 
@@ -57,10 +57,15 @@ namespace TicTacToe
             FieldSize = fieldSize;
         }
 
-        public void MakeMove(int row, int col, State sign, Color color)
+        public void MakeMove(int row, int col, Sign sign, Color color, int playerId)
         {
             var cell = GetCellAtPosition(row, col);
-            cell.Mark(sign, color);
+            cell.Mark(sign, color, playerId);
+        }
+
+        public void MakeMove(CellViewModel cell, Sign sign, Color color, int playerId)
+        {
+            cell.Mark(sign, color, playerId);
         }
 
         public Win CheckVictory()
@@ -101,25 +106,25 @@ namespace TicTacToe
             }
 
             if (FilledCells == CellsNumber)
-                return new Win() { GameOver = true, WinnerSign = State.Empty };
+                return new Win() { GameOver = true, WinnerSign = Sign.Empty };
 
 
-            return new Win() { GameOver = false, WinnerSign = State.Empty };
+            return new Win() { GameOver = false, WinnerSign = Sign.Empty };
         }
 
 
         private Win CheckCellsGroup(CellViewModel[] cells)
         {
             var result = new Win();
-            var cell = cells.FirstOrDefault(c => c.CellState != State.Empty);
+            var cell = cells.FirstOrDefault(c => c.CellSign != Sign.Empty);
             if (cell == null) return result;
 
-            if (cells.All(c => c.CellState == cell.CellState))
+            if (cells.All(c => c.CellSign == cell.CellSign))
             {
-                var cellColor = cell.ForegroundBrush.ToString();
-                if (cells.All(c => c.ForegroundBrush.ToString() == cellColor))
+                var playerId = cell.PlayerId;
+                if (cells.All(c => c.PlayerId == playerId))
                 {
-                    result.WinnerSign = cell.CellState;
+                    result.WinnerSign = cell.CellSign;
                     result.WinnerLine = cells;
                     result.GameOver = true;
                 }
@@ -158,7 +163,7 @@ namespace TicTacToe
                 cell.GameOverHighlight(color);
         }
 
-        public CellViewModel[] GetEmptyCells() => _gameField.Where(c => c.CellState == State.Empty).ToArray();
+        public CellViewModel[] GetEmptyCells() => _gameField.Where(c => c.CellSign == Sign.Empty).ToArray();
         public CellViewModel[] GetRow(int row) => _gameField.Where(c => c.Row == row).ToArray();
         public CellViewModel[] GetColumn(int col) => _gameField.Where(c => c.Column == col).ToArray();
 
@@ -184,5 +189,60 @@ namespace TicTacToe
             return GameField.FirstOrDefault(c => c.Column == col && c.Row == row);
         }
 
+        public CellViewModel GetRandomFromCells(IEnumerable<CellViewModel> cells)
+        {
+            var rnd = new Random();
+            var cellsArray = cells as CellViewModel[] ?? cells.ToArray();
+            var randomCell = rnd.Next(cellsArray.Length);
+            return cellsArray.ElementAtOrDefault(randomCell);
+        }
+
+        public bool IsCellEmpty(int row, int col)
+        {
+            return GetCellAtPosition(row, col).CellSign == Sign.Empty;
+        }
+
+        public CellViewModel GetNearestEmptyCell(int row, int col, int watchRadius = 1)
+        {
+            var cell = GetCellAtPosition(row, col);
+            if (cell != null && cell.CellSign == Sign.Empty)
+                return cell;
+
+            int rowMin;
+            int rowMax;
+            int colMin;
+            int colMax;
+
+            if (FieldSize.IsOdd())
+            {
+                rowMin = Math.Max(0, row - watchRadius);
+                rowMax = Math.Min(FieldSize, row + watchRadius);
+                colMin = Math.Max(0, col - watchRadius);
+                colMax = Math.Min(FieldSize, col + watchRadius);
+
+            }
+            else
+            {
+                rowMin = Math.Max(0, row - watchRadius);
+                rowMax = Math.Min(FieldSize, row + watchRadius - 1);
+                colMin = Math.Max(0, col - watchRadius);
+                colMax = Math.Min(FieldSize, col + watchRadius - 1);
+            }
+
+            var cellsAround = new List<CellViewModel>();
+            for (var r = rowMin; r <= rowMax; r++)
+            {
+                for (var c = colMin; c <= colMax; c++)
+                {
+                    var foundCell = GetCellAtPosition(r, c);
+                    if (foundCell != null && foundCell.CellSign == Sign.Empty)
+                        cellsAround.Add(GetCellAtPosition(r, c));
+                }
+            }
+
+            if (cellsAround.Count == 0) return null;
+
+            return GetRandomFromCells(cellsAround);
+        }
     }
 }

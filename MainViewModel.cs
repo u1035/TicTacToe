@@ -21,7 +21,7 @@ namespace TicTacToe
         #region Properties
 
         private int _fieldSize = 3;
-        private State _humanSign;
+        private Sign _humanSign;
         private int _numberOfBots = 1;
         private string _victoryText;
         private Win _currentGameState;
@@ -31,8 +31,10 @@ namespace TicTacToe
         private Color _playerColor;
         private Color _botColor;
 
+        public const int HumanPlayerId = -1;
+
         public CGameField GameField { get; set; }
-        public ObservableCollection<State> AvailableSigns { get; set; }
+        public ObservableCollection<Sign> AvailableSigns { get; set; }
         public ObservableCollection<FirstMoveEnum> AvailableStarters { get; set; }
 
         private readonly List<GameBot> _bots;
@@ -82,13 +84,13 @@ namespace TicTacToe
         public DelegateCommand StopButtonCommand { get; }
 
 
-        public State HumanSign
+        public Sign HumanSign
         {
             get => _humanSign;
             set => SetProperty(ref _humanSign, value);
         }
 
-        private State BotSign => _humanSign == State.O ? State.X : State.O;
+        private Sign BotSign => _humanSign == Sign.O ? Sign.X : Sign.O;
         private int CellsNumber => (int)Math.Pow(_fieldSize, 2);
 
         public FirstMoveEnum FirstMove
@@ -104,7 +106,7 @@ namespace TicTacToe
         public MainViewModel()
         {
             GameField = new CGameField(_fieldSize);
-            AvailableSigns = new ObservableCollection<State>();
+            AvailableSigns = new ObservableCollection<Sign>();
             AvailableStarters = new ObservableCollection<FirstMoveEnum>();
             AvailableColors = typeof(Colors).GetProperties();
             SelectedPlayerColor = AvailableColors.FirstOrDefault(c => c.Name == "Green");
@@ -113,8 +115,8 @@ namespace TicTacToe
             StartButtonCommand = new DelegateCommand(StartNewGame, CanStartNewGame);
             StopButtonCommand = new DelegateCommand(StopGame, CanStopGame);
 
-            AvailableSigns.Add(State.X);
-            AvailableSigns.Add(State.O);
+            AvailableSigns.Add(Sign.X);
+            AvailableSigns.Add(Sign.O);
             HumanSign = AvailableSigns[0];
 
             AvailableStarters.Add(FirstMoveEnum.Bot);
@@ -132,15 +134,15 @@ namespace TicTacToe
             GameField.CreateGameField(FieldSize, HumanMove);
 
             _bots.Clear();
-            _bots.Add(new RandomBot(BotSign, _botColor, FieldSize));
+            //_bots.Add(new RandomBot(GameField, BotSign, _botColor, FieldSize));
+            _bots.Add(new CenterBot(GameField, BotSign, _botColor, FieldSize));
 
             if (NumberOfBots > 1)
             {
                 var r = new Random();
                 for (var i = 0; i < NumberOfBots - 1; i++)
-                    _bots.Add(new RandomBot(BotSign, Color.FromRgb((byte)r.Next(1, 255), (byte)r.Next(1, 255), (byte)r.Next(1, 233)), FieldSize));
+                    _bots.Add(new CenterBot(GameField, BotSign, Color.FromRgb((byte)r.Next(1, 255), (byte)r.Next(1, 255), (byte)r.Next(1, 233)), FieldSize));
             }
-
 
             if (FirstMove == FirstMoveEnum.Bot) BotMove();
         }
@@ -162,7 +164,7 @@ namespace TicTacToe
 
         private void HumanMove(object sender)
         {
-            GameField.MakeMove(((CellViewModel)sender).Row, ((CellViewModel)sender).Column, HumanSign, _playerColor);
+            GameField.MakeMove(((CellViewModel)sender).Row, ((CellViewModel)sender).Column, HumanSign, _playerColor, HumanPlayerId);
             CheckVictory();
 
             if (_currentGameState.GameOver) return;
@@ -175,7 +177,7 @@ namespace TicTacToe
             foreach (var bot in _bots)
             {
                 if (GameField.FilledCells == CellsNumber) return;
-                bot.BotMove(GameField);
+                bot.BotMove();
 
                 CheckVictory();
             }

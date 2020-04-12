@@ -6,7 +6,7 @@ using Prism.Mvvm;
 
 namespace TicTacToe
 {
-    public enum State
+    public enum Sign
     {
         Empty,
         X,
@@ -17,7 +17,7 @@ namespace TicTacToe
     {
         #region Properties
 
-        private State _state = State.Empty;
+        private Sign _state = Sign.Empty;
         private Brush _foregroundBrush = new SolidColorBrush(SystemColors.ControlTextColor);
         private Brush _borderBrush = new SolidColorBrush(SystemColors.ActiveBorderColor);
         private int _borderThickness = 1;
@@ -25,8 +25,9 @@ namespace TicTacToe
         private string _text;
         private int _row;
         private int _col;
+        private int _playerId;
 
-        public State CellState
+        public Sign CellSign
         {
             get => _state;
             private set
@@ -76,6 +77,12 @@ namespace TicTacToe
             set => SetProperty(ref _borderThickness, value);
         }
 
+        public int PlayerId
+        {
+            get => _playerId;
+            set => _playerId = value;
+        }
+
         public delegate void ClickEvent(object sender);
         public event ClickEvent OnClick;
 
@@ -91,15 +98,15 @@ namespace TicTacToe
 
         private void ChangeButtonText()
         {
-            switch (CellState)
+            switch (CellSign)
             {
-                case State.Empty:
+                case Sign.Empty:
                     Text = "";
                     break;
-                case State.X:
+                case Sign.X:
                     Text = "X";
                     break;
-                case State.O:
+                case Sign.O:
                     Text = "O";
                     break;
                 default:
@@ -107,11 +114,12 @@ namespace TicTacToe
             }
         }
 
-        public void Mark(State sign, Color color)
+        public void Mark(Sign sign, Color color, int playerId)
         {
-            if (CellState != State.Empty) return;
-            CellState = sign;
+            if (CellSign != Sign.Empty) return;
+            CellSign = sign;
             ForegroundBrush = new SolidColorBrush(color);
+            PlayerId = playerId;
         }
 
         public void GameOverHighlight(Color color)
@@ -122,7 +130,7 @@ namespace TicTacToe
 
         private void ButtonClicked()
         {
-            if (!Enabled || CellState != State.Empty) return;
+            if (!Enabled || CellSign != Sign.Empty) return;
             OnClick?.Invoke(this);
         }
         private static bool CanClick() => true;

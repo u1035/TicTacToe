@@ -4,17 +4,22 @@ namespace TicTacToe.Bots
 {
     public abstract class GameBot
     {
-        protected readonly State BotSign;
+        protected readonly Sign BotSign;
         protected readonly Color BotColor;
         protected readonly int FieldSize;
+        protected readonly CGameField GameField;
+        protected readonly int MyPlayerId;
 
-        protected GameBot(State botSign, Color botColor, int fieldSize)
+        protected GameBot(CGameField gameField, Sign botSign, Color botColor, int fieldSize)
         {
             BotColor = botColor;
             FieldSize = fieldSize;
             BotSign = botSign;
+            GameField = gameField;
+
+            MyPlayerId = PlayerIdGenerator.GetNewPlayerId();
         }
 
-        public abstract void BotMove(CGameField gameField);
+        public abstract void BotMove();
     }
 }

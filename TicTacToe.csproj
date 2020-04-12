@@ -83,13 +83,14 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Bots\SecondBot.cs" />
+    <Compile Include="Bots\CenterBot.cs" />
     <Compile Include="CellView.xaml.cs">
       <DependentUpon>CellView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Bots\RandomBot.cs" />
     <Compile Include="Bots\GameBot.cs" />
     <Compile Include="CGameField.cs" />
+    <Compile Include="IntHelpers.cs" />
     <Compile Include="InverseBooleanConverter.cs" />
     <Compile Include="MainViewModel.cs" />
     <Compile Include="MainWindow.xaml.cs">
@@ -99,6 +100,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CellViewModel.cs" />
+    <Compile Include="PlayerIdGenerator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

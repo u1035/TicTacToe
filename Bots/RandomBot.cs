@@ -1,21 +1,18 @@
-﻿using System;
-using System.Windows.Media;
+﻿using System.Windows.Media;
 
 namespace TicTacToe.Bots
 {
     public class RandomBot : GameBot
     {
-        public RandomBot(State botSign, Color botColor, int fieldSize) : base(botSign, botColor, fieldSize)
+        public RandomBot(CGameField gameField, Sign botSign, Color botColor, int fieldSize) : base(gameField, botSign, botColor, fieldSize)
         {
         }
 
-        public override void BotMove(CGameField gameField)
+        public override void BotMove()
         {
-            var rnd = new Random();
-
-            var emptyCells = gameField.GetEmptyCells();
-            var randomCell = rnd.Next(gameField.EmptyCells);
-            emptyCells[randomCell].Mark(BotSign, BotColor);
+            var emptyCells = GameField.GetEmptyCells();
+            var randomCell = GameField.GetRandomFromCells(emptyCells);
+            GameField.MakeMove(randomCell, BotSign, BotColor, MyPlayerId);
         }
     }
 }
