@@ -80,7 +80,7 @@ namespace TicTacToe
         public int PlayerId
         {
             get => _playerId;
-            set => _playerId = value;
+            private set => _playerId = value;
         }
 
         public delegate void ClickEvent(object sender);

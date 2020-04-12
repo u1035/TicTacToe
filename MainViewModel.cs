@@ -31,7 +31,7 @@ namespace TicTacToe
         private Color _playerColor;
         private Color _botColor;
 
-        public const int HumanPlayerId = -1;
+        private const int HumanPlayerId = -1;
 
         public CGameField GameField { get; set; }
         public ObservableCollection<Sign> AvailableSigns { get; set; }

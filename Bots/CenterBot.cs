@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Documents;
 using System.Windows.Media;
 
 namespace TicTacToe.Bots
@@ -55,7 +54,7 @@ namespace TicTacToe.Bots
                 if (row.All(c => c.PlayerId == MyPlayerId || c.CellSign == Sign.Empty))
                 {
                     var emptyCells = row.Where(c => c.CellSign == Sign.Empty).ToList();
-                    if (bestLine.Count == 0 || bestLine.Count > emptyCells.Count())
+                    if (bestLine.Count == 0 || bestLine.Count > emptyCells.Count)
                     {
                         bestLine = emptyCells;
                     }
@@ -69,7 +68,7 @@ namespace TicTacToe.Bots
                 if (column.All(c => c.PlayerId == MyPlayerId || c.CellSign == Sign.Empty))
                 {
                     var emptyCells = column.Where(c => c.CellSign == Sign.Empty).ToList();
-                    if (bestLine.Count == 0 || bestLine.Count > emptyCells.Count())
+                    if (bestLine.Count == 0 || bestLine.Count > emptyCells.Count)
                     {
                         bestLine = emptyCells;
                     }
@@ -81,7 +80,7 @@ namespace TicTacToe.Bots
             if (diag1.All(c => c.PlayerId == MyPlayerId || c.CellSign == Sign.Empty))
             {
                 var emptyCells = diag1.Where(c => c.CellSign == Sign.Empty).ToList();
-                if (bestLine.Count == 0 || bestLine.Count > emptyCells.Count())
+                if (bestLine.Count == 0 || bestLine.Count > emptyCells.Count)
                 {
                     bestLine = emptyCells;
                 }
@@ -91,7 +90,7 @@ namespace TicTacToe.Bots
             if (diag2.All(c => c.CellSign == BotSign || c.CellSign == Sign.Empty))
             {
                 var emptyCells = diag2.Where(c => c.CellSign == Sign.Empty).ToList();
-                if (bestLine.Count == 0 || bestLine.Count > emptyCells.Count())
+                if (bestLine.Count == 0 || bestLine.Count > emptyCells.Count)
                 {
                     bestLine = emptyCells;
                 }
