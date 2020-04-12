@@ -29,7 +29,7 @@ namespace TicTacToe
         public State CellState
         {
             get => _state;
-            set
+            private set
             {
                 if (SetProperty(ref _state, value)) ChangeButtonText();
             }
@@ -113,11 +113,6 @@ namespace TicTacToe
             CellState = sign;
             ForegroundBrush = new SolidColorBrush(color);
         }
-
-        //public void Highlight(Color color)
-        //{
-        //    ForegroundBrush = new SolidColorBrush(color);
-        //}
 
         public void GameOverHighlight(Color color)
         {

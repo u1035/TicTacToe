@@ -8,12 +8,14 @@ using Prism.Mvvm;
 namespace TicTacToe
 {
 
-    public enum Winner
+    public class Win
     {
-        Nobody,
-        Human,
-        Bot
+        public bool GameOver { get; set; }
+        public State WinnerSign { get; set; }
+
+        public IEnumerable<CellViewModel> WinnerLine { get; set; }
     }
+
 
     public class CGameField : BindableBase
     {
@@ -26,10 +28,6 @@ namespace TicTacToe
         {
             get => _gameInProgress;
             set => SetProperty(ref _gameInProgress, value);
-            //{
-            //    if (SetProperty(ref _gameInProgress, value))
-            //        ControlsEnabled = !value;
-            //}
         }
 
         public ObservableCollection<CellViewModel> GameField
@@ -59,16 +57,77 @@ namespace TicTacToe
             FieldSize = fieldSize;
         }
 
-
-        
-
-        
         public void MakeMove(int row, int col, State sign, Color color)
         {
             var cell = GetCellAtPosition(row, col);
             cell.Mark(sign, color);
         }
-        
+
+        public Win CheckVictory()
+        {
+            //Check rows
+            for (var r = 0; r < FieldSize; r++)
+            {
+                var cells = GetRow(r);
+                var result = CheckCellsGroup(cells);
+                if (result.GameOver)
+                {
+                    return result;
+                }
+            }
+            //Check cols
+            for (var col = 0; col < FieldSize; col++)
+            {
+                var cells = GetColumn(col);
+                var result = CheckCellsGroup(cells);
+                if (result.GameOver)
+                {
+                    return result;
+                }
+            }
+            //Check diagonals
+            var diagonal1 = GetDiagonal(false);
+            var diagonal1Result = CheckCellsGroup(diagonal1);
+            if (diagonal1Result.GameOver)
+            {
+                return diagonal1Result;
+            }
+
+            var diagonal2 = GetDiagonal(true);
+            var diagonal2Result = CheckCellsGroup(diagonal2);
+            if (diagonal2Result.GameOver)
+            {
+                return diagonal2Result;
+            }
+
+            if (FilledCells == CellsNumber)
+                return new Win() { GameOver = true, WinnerSign = State.Empty };
+
+
+            return new Win() { GameOver = false, WinnerSign = State.Empty };
+        }
+
+
+        private Win CheckCellsGroup(CellViewModel[] cells)
+        {
+            var result = new Win();
+            var cell = cells.FirstOrDefault(c => c.CellState != State.Empty);
+            if (cell == null) return result;
+
+            if (cells.All(c => c.CellState == cell.CellState))
+            {
+                var cellColor = cell.ForegroundBrush.ToString();
+                if (cells.All(c => c.ForegroundBrush.ToString() == cellColor))
+                {
+                    result.WinnerSign = cell.CellState;
+                    result.WinnerLine = cells;
+                    result.GameOver = true;
+                }
+            }
+            return result;
+        }
+
+
 
         public void CreateGameField(int fieldSize, CellViewModel.ClickEvent humanMove)
         {
@@ -100,6 +159,25 @@ namespace TicTacToe
         }
 
         public CellViewModel[] GetEmptyCells() => _gameField.Where(c => c.CellState == State.Empty).ToArray();
+        public CellViewModel[] GetRow(int row) => _gameField.Where(c => c.Row == row).ToArray();
+        public CellViewModel[] GetColumn(int col) => _gameField.Where(c => c.Column == col).ToArray();
+
+        public CellViewModel[] GetDiagonal(bool reversed)
+        {
+            var result = new List<CellViewModel>();
+
+            for (var i = 0; i < FieldSize; i++)
+            {
+                var cell = reversed ?
+                    GameField.FirstOrDefault(c => c.Column == FieldSize - i - 1 && c.Row == i) :
+                    GameField.FirstOrDefault(c => c.Column == i && c.Row == i);
+
+                if (cell != null)
+                    result.Add(cell);
+            }
+
+            return result.ToArray();
+        }
 
         public CellViewModel GetCellAtPosition(int row, int col)
         {

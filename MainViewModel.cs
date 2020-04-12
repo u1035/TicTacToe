@@ -24,8 +24,7 @@ namespace TicTacToe
         private State _humanSign;
         private int _numberOfBots = 1;
         private string _victoryText;
-        private bool _botWin;
-        private bool _humanWin;
+        private Win _currentGameState;
         private FirstMoveEnum _firstMove;
         private PropertyInfo _selectedPlayerColor;
         private PropertyInfo _selectedBotColor;
@@ -129,8 +128,6 @@ namespace TicTacToe
 
         private void StartNewGame()
         {
-            _botWin = false;
-            _humanWin = false;
             VictoryText = "";
             GameField.CreateGameField(FieldSize, HumanMove);
 
@@ -152,9 +149,6 @@ namespace TicTacToe
         {
             if (!GameField.GameInProgress) return;
 
-            _botWin = false;
-            _humanWin = false;
-            
             VictoryText = "";
             _bots.Clear();
             GameField.GameField.Clear();
@@ -171,108 +165,9 @@ namespace TicTacToe
             GameField.MakeMove(((CellViewModel)sender).Row, ((CellViewModel)sender).Column, HumanSign, _playerColor);
             CheckVictory();
 
-            if (_humanWin) return;
+            if (_currentGameState.GameOver) return;
 
             BotMove();
-        }
-
-        private void CheckVictory()
-        {
-            //Check rows
-            for (var r = 0; r < FieldSize; r++)
-            {
-                var cells = GameField.GameField.Where(c => c.Row == r).ToArray();
-                if (CheckCellsGroup(cells))
-                {
-                    GameOver();
-                    return;
-                }
-            }
-
-            //Check cols
-            for (var col = 0; col < FieldSize; col++)
-            {
-                var cells = GameField.GameField.Where(c => c.Column == col).ToArray();
-                if (CheckCellsGroup(cells))
-                {
-                    GameOver();
-                    return;
-                }
-            }
-
-            //Check diagonals
-            var diagonal = new List<CellViewModel>();
-            for (var i = 0; i < FieldSize; i++)
-            {
-                var cell = GameField.GameField.FirstOrDefault(c => c.Column == i && c.Row == i);
-                if (cell != null)
-                    diagonal.Add(cell);
-            }
-
-            if (CheckCellsGroup(diagonal.ToArray()))
-            {
-                GameOver();
-                return;
-            }
-
-            diagonal.Clear();
-            for (var i = 0; i < FieldSize; i++)
-            {
-                var cell = GameField.GameField.FirstOrDefault(c => c.Column == FieldSize - i - 1 && c.Row == i);
-                if (cell != null)
-                    diagonal.Add(cell);
-            }
-
-            if (CheckCellsGroup(diagonal.ToArray()))
-            {
-                GameOver();
-                return;
-            }
-
-            if (GameField.FilledCells == CellsNumber && !_botWin && !_humanWin)
-                NobodyWin();
-        }
-
-        private bool CheckCellsGroup(CellViewModel[] cells)
-        {
-            if (cells.All(c => c.CellState == HumanSign))
-            {
-                _humanWin = true;
-                GameField.GameOverHighlightCells(cells, Colors.Green);
-                return true;
-            }
-
-            if (cells.All(c => c.CellState == BotSign))
-            {
-                var botBrush = cells.First().ForegroundBrush.ToString();
-                if (cells.All(c => c.ForegroundBrush.ToString() == botBrush))
-                {
-                    _botWin = true;
-                    GameField.GameOverHighlightCells(cells, Colors.Red);
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        private void NobodyWin()
-        {
-            GameField.DisableGameField();
-            VictoryText = "Nobody win";
-            GameField.GameInProgress = false;
-        }
-
-        private void GameOver()
-        {
-            GameField.DisableGameField();
-            GameField.GameInProgress = false;
-
-            if (_humanWin)
-                VictoryText = "Player win";
-
-            if (_botWin)
-                VictoryText = "Bot win";
         }
 
         private void BotMove()
@@ -285,5 +180,37 @@ namespace TicTacToe
                 CheckVictory();
             }
         }
+
+        private void CheckVictory()
+        {
+            _currentGameState = GameField.CheckVictory();
+            if (_currentGameState.GameOver)
+            {
+                GameField.DisableGameField();
+                GameField.GameInProgress = false;
+                GameOver(_currentGameState);
+            }
+
+        }
+
+        private void GameOver(Win winner)
+        {
+            if (winner.WinnerSign == HumanSign)
+            {
+                VictoryText = "Player win";
+                GameField.GameOverHighlightCells(winner.WinnerLine, _playerColor);
+            }
+            else if (winner.WinnerSign == BotSign)
+            {
+                VictoryText = "Bot win";
+                GameField.GameOverHighlightCells(winner.WinnerLine, _botColor);
+            }
+            else
+            {
+                VictoryText = "Nobody win";
+            }
+        }
+
+
     }
 }
