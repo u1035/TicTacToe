@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Windows.Media;
+﻿using System.Windows.Media;
 
 namespace TicTacToe.Bots
 {
@@ -16,6 +15,6 @@ namespace TicTacToe.Bots
             BotSign = botSign;
         }
 
-        public abstract void BotMove(IEnumerable<CellViewModel> gameField);
+        public abstract void BotMove(CGameField gameField);
     }
 }

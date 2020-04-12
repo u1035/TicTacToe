@@ -89,6 +89,8 @@
     </Compile>
     <Compile Include="Bots\RandomBot.cs" />
     <Compile Include="Bots\GameBot.cs" />
+    <Compile Include="CGameField.cs" />
+    <Compile Include="InverseBooleanConverter.cs" />
     <Compile Include="MainViewModel.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>

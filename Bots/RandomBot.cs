@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Windows.Media;
 
 namespace TicTacToe.Bots
@@ -11,14 +9,13 @@ namespace TicTacToe.Bots
         {
         }
 
-        public override void BotMove(IEnumerable<CellViewModel> gameField)
+        public override void BotMove(CGameField gameField)
         {
             var rnd = new Random();
 
-            var emptyCells = gameField.Where(c => c.CellState == State.Empty).ToArray();
-            var rndCell = rnd.Next(emptyCells.Count());
-            emptyCells[rndCell].CellState = BotSign;
-            emptyCells[rndCell].Highlight(BotColor);
+            var emptyCells = gameField.GetEmptyCells();
+            var randomCell = rnd.Next(gameField.EmptyCells);
+            emptyCells[randomCell].Mark(BotSign, BotColor);
         }
     }
 }

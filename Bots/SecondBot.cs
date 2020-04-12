@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Windows.Media;
+﻿using System.Windows.Media;
 
 namespace TicTacToe.Bots
 {
@@ -10,7 +8,7 @@ namespace TicTacToe.Bots
         {
         }
 
-        public override void BotMove(IEnumerable<CellViewModel> gameField)
+        public override void BotMove(CGameField gameField)
         {
             
         }

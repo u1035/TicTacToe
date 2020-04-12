@@ -21,8 +21,6 @@ namespace TicTacToe
         private Brush _foregroundBrush = new SolidColorBrush(SystemColors.ControlTextColor);
         private Brush _borderBrush = new SolidColorBrush(SystemColors.ActiveBorderColor);
         private int _borderThickness = 1;
-        private readonly Color _humanColor;
-        private readonly State _humanSymbol;
         private bool _enabled = true;
         private string _text;
         private int _row;
@@ -84,13 +82,11 @@ namespace TicTacToe
         #endregion
 
 
-        public CellViewModel(int row, int col, State humanSymbol, Color humanColor)
+        public CellViewModel(int row, int col)
         {
             ClickCommand = new DelegateCommand(ButtonClicked, CanClick);
             Row = row;
             Column = col;
-            _humanSymbol = humanSymbol;
-            _humanColor = humanColor;
         }
 
         private void ChangeButtonText()
@@ -111,10 +107,17 @@ namespace TicTacToe
             }
         }
 
-        public void Highlight(Color color)
+        public void Mark(State sign, Color color)
         {
+            if (CellState != State.Empty) return;
+            CellState = sign;
             ForegroundBrush = new SolidColorBrush(color);
         }
+
+        //public void Highlight(Color color)
+        //{
+        //    ForegroundBrush = new SolidColorBrush(color);
+        //}
 
         public void GameOverHighlight(Color color)
         {
@@ -125,9 +128,6 @@ namespace TicTacToe
         private void ButtonClicked()
         {
             if (!Enabled || CellState != State.Empty) return;
-
-            CellState = _humanSymbol;
-            Highlight(_humanColor);
             OnClick?.Invoke(this);
         }
         private static bool CanClick() => true;
